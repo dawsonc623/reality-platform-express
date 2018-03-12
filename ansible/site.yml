@@ -1,0 +1,72 @@
+- hosts: all
+  remote_user: root
+  gather_facts: false
+  pre_tasks:
+    - name: Install python2
+      raw: sudo apt-get -y install python-simplejson
+  tasks:
+    # Add Node.js repository
+    - name: Download NodeSource apt-repository script
+      get_url:
+        url: https://deb.nodesource.com/setup_8.x
+        dest: /tmp
+        mode: 0744
+
+    - name: Run the NodeSource apt-repository script
+      shell: /tmp/setup_8.x
+      become: true
+
+    # Add Yarn repository
+    - name: Add the yarn key
+      apt_key:
+        url: https://dl.yarnpkg.com/debian/pubkey.gpg
+        state: present
+      become: true
+
+    - name: Add the yarn repository
+      apt_repository:
+        repo: deb https://dl.yarnpkg.com/debian/ stable main
+        state: present
+      become: true
+
+    # Install system Node and Yarn
+    - name: Install Node and Yarn
+      apt:
+        name:
+          - nodejs
+          - yarn
+        update_cache: true
+      become: true
+
+    # Install application dependencies
+    - name: Run yarn install
+      shell: yarn install
+      args:
+        chdir: /vagrant
+
+    # Set up service for express
+    - name: Add systemd unit for express
+      blockinfile:
+        dest: /etc/systemd/system/reality-platform-express.service
+        create: true
+        content: |
+          [Unit]
+          Description=Reality Platform Express
+
+          [Service]
+          User=vagrant
+          WorkingDirectory=/vagrant
+          ExecStart=/usr/bin/yarn {{ yarn_command }}
+          Restart=on-failure
+          RestartSec=3
+
+          [Install]
+          WantedBy=multi-user.target
+      become: true
+
+    - name: Start service for express
+      service:
+        name: reality-platform-express
+        enabled: yes
+        state: started
+      become: true
