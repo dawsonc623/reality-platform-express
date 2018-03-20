@@ -13,7 +13,6 @@ router.post(
     ).then(
       (dreamer) =>
       {
-        console.log("JSON", dreamer.toJSON());
         response.end(
           dreamer.toJSON()
         );

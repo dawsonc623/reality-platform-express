@@ -32,8 +32,6 @@ class DreamerService
     }).then(
       (dreamer) =>
       {
-        console.log(dreamer);
-
         const match = bcrypt.compareSync(
           password,
           dreamer.password
