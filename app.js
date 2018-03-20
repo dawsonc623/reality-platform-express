@@ -2,7 +2,8 @@ const express       = require("express");
 const logger        = require("morgan");
 const bodyParser    = require("body-parser");
 
-const dreamers  = require("./src/app/endpoints/dreamers");
+const dreamers        = require("./src/app/endpoints/dreamers");
+const dreamerSessions = require("./src/app/endpoints/dreamers/sessions");
 
 const app = express();
 
@@ -31,6 +32,7 @@ app.use(
 // Configure Endpoints
 
 app.use("/dreamers", dreamers);
+app.use("/dreamers/sessions", dreamerSessions);
 
 // Nothing else matched, so generate a 404 and pass it to the error handler
 app.use(

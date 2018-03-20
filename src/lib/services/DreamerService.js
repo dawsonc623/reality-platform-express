@@ -20,6 +20,34 @@ class DreamerService
       }
     );
   }
+
+  logIn(
+    username,
+    password
+  ) {
+    return Dreamer.findOne({
+      "where" : {
+        username
+      }
+    }).then(
+      (dreamer) =>
+      {
+        console.log(dreamer);
+
+        const match = bcrypt.compareSync(
+          password,
+          dreamer.password
+        );
+
+        if (!match)
+        {
+          throw new Error("Invalid username/password combination");
+        }
+
+        return dreamer;
+      }
+    );
+  }
 }
 
 module.exports = DreamerService;
