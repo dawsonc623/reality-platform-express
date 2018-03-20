@@ -2,9 +2,14 @@ const express       = require("express");
 const logger        = require("morgan");
 const bodyParser    = require("body-parser");
 
+const dreamers  = require("./src/app/endpoints/dreamers");
+
 const app = express();
 
 // Configure middleware
+
+// Load .env
+require("dotenv").config();
 
 // Logging
 app.use(logger("dev"));
@@ -22,6 +27,10 @@ app.use(
     next();
   }
 );
+
+// Configure Endpoints
+
+app.use("/dreamers", dreamers);
 
 // Nothing else matched, so generate a 404 and pass it to the error handler
 app.use(
