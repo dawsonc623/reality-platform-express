@@ -12,6 +12,17 @@ app.use(logger("dev"));
 // JSON parsing
 app.use(bodyParser.json());
 
+// CORS
+app.use(
+  function(request, response, next)
+  {
+    response.header("Access-Control-Allow-Headers", "Content-Type,Content-Length");
+    response.header("Access-Control-Allow-Origin",  process.env.WEB_ORIGIN);
+
+    next();
+  }
+);
+
 // Nothing else matched, so generate a 404 and pass it to the error handler
 app.use(
   function(request, response, next)
