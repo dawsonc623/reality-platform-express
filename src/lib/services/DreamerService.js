@@ -1,6 +1,8 @@
 const bcrypt  = require("bcrypt");
 const Dreamer = require("../models").Dreamer;
 
+const InvalidCredentialsError = require("../../lib/services/dreamer/InvalidCredentialsError");
+
 class DreamerService
 {
   createAccount(
@@ -32,14 +34,21 @@ class DreamerService
     }).then(
       (dreamer) =>
       {
-        const match = bcrypt.compareSync(
-          password,
-          dreamer.password
-        );
+        let match = false;
+
+        if (dreamer)
+        {
+          match = bcrypt.compareSync(
+            password,
+            dreamer.password
+          );
+        }
 
         if (!match)
         {
-          throw new Error("Invalid username/password combination");
+          throw new InvalidCredentialsError(
+            "Invalid username/password combination"
+          );
         }
 
         return dreamer;
