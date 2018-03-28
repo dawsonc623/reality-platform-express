@@ -50,17 +50,21 @@ app.use(
 app.use(
   function(error, request, response, next)
   {
-    let responseText = `{"message":"${error.message}"`;
+    //TODO User-friendly message
+    const responseObject  = {
+      "message" : error.message,
+      "type"    : "unhandled"
+    };
 
     if (request.app.get("env") === "development")
     {
-      responseText += `,"stack":"${error.stack}"`;
+      responseObject.stack  = error.stack.replace(/\n/g, "\\n");
     }
 
-    responseText += "}";
-
     response.status(error.status || 500);
-    response.end(responseText);
+    response.end(
+      JSON.stringify(responseObject)
+    );
   }
 );
 
